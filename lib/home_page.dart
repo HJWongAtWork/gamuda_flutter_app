@@ -11,16 +11,39 @@ class HomePage extends StatelessWidget {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
+          children: [
             const Text(
               'Welcome to My App',
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(fontSize: 24),
             ),
-            ElevatedButton(
-              onPressed: () {
-                // Add your button's functionality here
-              },
-              child: const Text('Get Started'),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                  width: 150,
+                  height: 150,
+                  color: Colors.blue,
+                  // Replace with your first chart widget
+                ),
+                Container(
+                  width: 150,
+                  height: 300,
+                  color: Colors.green,
+                  // Replace with your second chart widget
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+              Container(
+                width: 400,
+                height: 300,
+                color: Colors.red,
+              ),
+              ]
             ),
           ],
         ),
