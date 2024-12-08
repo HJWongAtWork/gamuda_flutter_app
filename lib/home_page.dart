@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'login_page.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final String token;
+  const HomePage({super.key, required this.token});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -25,12 +27,22 @@ class _HomePageState extends State<HomePage> {
     final baseUrl = 'http://localhost:8000';
 
     try {
-      final cityResponse =
-          await http.post(Uri.parse('$baseUrl/analytics/by_city'));
-      final ageResponse =
-          await http.post(Uri.parse('$baseUrl/analytics/by_age_range'));
-      final salaryResponse =
-          await http.post(Uri.parse('$baseUrl/analytics/salary_histogram'));
+      final headers = {
+        'Authorization': 'Bearer ${widget.token}',
+      };
+
+      final cityResponse = await http.post(
+        Uri.parse('$baseUrl/analytics/by_city'),
+        headers: headers,
+      );
+      final ageResponse = await http.post(
+        Uri.parse('$baseUrl/analytics/by_age_range'),
+        headers: headers,
+      );
+      final salaryResponse = await http.post(
+        Uri.parse('$baseUrl/analytics/salary_histogram'),
+        headers: headers,
+      );
 
       setState(() {
         cityData = json.decode(cityResponse.body);
@@ -47,7 +59,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _handleLogout() {
-    // Empty logout function
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginPage()),
+    );
   }
 
   @override
