@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'home_page.dart';
+import '../config/api_endpoints.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({Key? key}) : super(key: key);
@@ -25,7 +26,7 @@ class _SignupPageState extends State<SignupPage> {
 
       try {
         final response = await http.post(
-          Uri.parse('http://localhost:8000/register'),
+          Uri.parse(ApiEndpoints.auth.register),
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',

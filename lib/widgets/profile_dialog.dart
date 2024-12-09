@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/account_update.dart';
+import '../config/api_endpoints.dart';
 
 class ProfileDialog extends StatefulWidget {
   final String token;
@@ -66,7 +67,7 @@ class _ProfileDialogState extends State<ProfileDialog> {
   Future<void> _fetchAccountDetails() async {
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:8000/account/details'),
+        Uri.parse(ApiEndpoints.auth.accountDetails),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },
@@ -120,7 +121,7 @@ class _ProfileDialogState extends State<ProfileDialog> {
       );
 
       final response = await http.post(
-        Uri.parse('http://localhost:8000/account/update'),
+        Uri.parse(ApiEndpoints.auth.updateAccount),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
           'Content-Type': 'application/json',
@@ -176,7 +177,7 @@ class _ProfileDialogState extends State<ProfileDialog> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:8000/account/delete'),
+        Uri.parse(ApiEndpoints.auth.deleteAccount),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
           'Content-Type': 'application/json',

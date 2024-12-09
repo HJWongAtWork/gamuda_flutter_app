@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../config/api_endpoints.dart';
 
 class AuthService with ChangeNotifier {
   String? _token;
@@ -17,7 +18,7 @@ class AuthService with ChangeNotifier {
 
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:8000/login'),
+        Uri.parse(ApiEndpoints.auth.login),
         body: {
           'username': username,
           'password': password,
