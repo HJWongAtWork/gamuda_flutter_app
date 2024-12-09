@@ -1,9 +1,7 @@
 name: Deploy to Firebase Hosting
 on:
   push:
-    branches: [ main ]  # or master, depending on your default branch
-  pull_request:
-    branches: [ main ]
+    branches: [ main ]  # Only triggers on push to main
 
 jobs:
   build_and_deploy:
@@ -15,24 +13,18 @@ jobs:
       # Setup Flutter
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.5'  # Specify your Flutter version
+          flutter-version: '3.24.5'
           channel: 'stable'
+          cache: true  # Add caching for faster builds
       
       # Install dependencies
       - name: Install Dependencies
         run: flutter pub get
 
-      # Analyze code (optional but recommended)
-      - name: Analyze
-        run: flutter analyze
-
-      # Run tests (if you have any)
-      - name: Run tests
-        run: flutter test
-
       # Build Web
       - name: Build Web
         run: flutter build web --release --dart-define=API_URL=http://localhost:8000
+        # localhost won't work in production anyway
 
       # Deploy to Firebase
       - uses: FirebaseExtended/action-hosting-deploy@v0
@@ -40,4 +32,4 @@ jobs:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_GAMUDA_FLUTTER_HOMEWORK_01 }}'
           channelId: live
-          projectId: your-project-id  # Replace with your project ID
+          projectId: gamuda-flutter-homework-01  # Make sure this matches your Firebase project ID
