@@ -6,53 +6,70 @@ import '../widgets/charts/salary_histogram.dart';
 import '../widgets/profile_dialog.dart';
 import 'login_page.dart';
 import '../config/api_endpoints.dart';
+import '../services/auth_service.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
-  final String token;
-  const HomePage({super.key, required this.token});
+  String token;
+  HomePage({super.key, required this.token});
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  late final AnalyticsService _analyticsService;
+  AnalyticsService? _analyticsService;
   Map<String, dynamic>? cityData;
   Map<String, dynamic>? ageRangeData;
   Map<String, dynamic>? salaryHistogramData;
   bool _isLoading = true;
 
   @override
-  void initState() {
-    super.initState();
-    _analyticsService = AnalyticsService(
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Initialize AuthService with the token
+    final authService = Provider.of<AuthService>(context, listen: false);
+    authService.updateToken(widget.token);
+
+    _analyticsService ??= AnalyticsService(
       baseUrl: ApiEndpoints.baseUrl,
-      token: widget.token,
+      context: context,
     );
     fetchData();
   }
 
   Future<void> fetchData() async {
+    if (_analyticsService == null) return;
+
     setState(() => _isLoading = true);
     try {
-      final cityResponse = await _analyticsService.fetchCityData();
-      final ageResponse = await _analyticsService.fetchAgeRangeData();
-      final salaryResponse = await _analyticsService.fetchSalaryHistogram();
+      final cityResponse = await _analyticsService!.fetchCityData();
+      final ageResponse = await _analyticsService!.fetchAgeRangeData();
+      final salaryResponse = await _analyticsService!.fetchSalaryHistogram();
 
-      setState(() {
-        cityData = cityResponse;
-        ageRangeData = ageResponse;
-        salaryHistogramData = salaryResponse;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          cityData = cityResponse;
+          ageRangeData = ageResponse;
+          salaryHistogramData = salaryResponse;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error fetching data: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error fetching data: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+
+        // If unauthorized, redirect to login
+        if (e.toString().contains('Unauthorized')) {
+          _handleLogout();
+        }
+      }
     }
   }
 
@@ -62,15 +79,42 @@ class _HomePageState extends State<HomePage> {
       builder: (context) => ProfileDialog(token: widget.token),
     );
 
-    if (result == 'deleted') {
-      _handleLogout();
-    } else if (result == true) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Account updated successfully'),
-          backgroundColor: Colors.green,
-        ),
-      );
+    if (result != null) {
+      if (result == 'deleted') {
+        _handleLogout();
+      } else if (result is Map<String, dynamic>) {
+        if (result['success']) {
+          if (result['newToken'] != null) {
+            // Update the token in AuthService
+            final authService =
+                Provider.of<AuthService>(context, listen: false);
+            await authService.updateToken(result['newToken']);
+
+            // Update the local token
+            setState(() {
+              widget.token = result['newToken'];
+            });
+
+            // Reinitialize analytics service
+            _analyticsService = AnalyticsService(
+              baseUrl: ApiEndpoints.baseUrl,
+              context: context,
+            );
+
+            // Refresh data with new token
+            await fetchData();
+          }
+
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Profile updated successfully'),
+                backgroundColor: Colors.green,
+              ),
+            );
+          }
+        }
+      }
     }
   }
 

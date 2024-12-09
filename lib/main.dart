@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';  // Add this import
+import 'services/auth_service.dart';      // Add this import
 import 'pages/login_page.dart';
 
 void main() {
@@ -10,9 +12,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Gamuda Flutter App',
-      home: LoginPage(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthService()),
+      ],
+      child: const MaterialApp(
+        title: 'Gamuda Flutter App',
+        home: LoginPage(),
+      ),
     );
   }
 }

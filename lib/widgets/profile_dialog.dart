@@ -130,7 +130,19 @@ class _ProfileDialogState extends State<ProfileDialog> {
       );
 
       if (response.statusCode == 200) {
-        Navigator.of(context).pop(true); // Return true to indicate success
+        final responseData = json.decode(response.body);
+        // Check if username was changed and new token was provided
+        if (update.newUsername != null &&
+            responseData['access_token'] != null) {
+          // Return both success status and new token
+          Navigator.of(context).pop({
+            'success': true,
+            'newToken': responseData['access_token'],
+            'newUsername': update.newUsername,
+          });
+        } else {
+          Navigator.of(context).pop({'success': true});
+        }
       } else {
         setState(() {
           _error = json.decode(response.body)['detail'] ?? 'Update failed';

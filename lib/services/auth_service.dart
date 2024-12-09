@@ -61,6 +61,11 @@ class AuthService with ChangeNotifier {
     return _token;
   }
 
+  Future<void> updateToken(String newToken) async {
+    _token = newToken;
+    notifyListeners();
+  }
+
   // Refresh token if needed (you might want to implement token refresh with your backend)
   Future<String?> refreshToken() async {
     // Implement token refresh logic here if needed
