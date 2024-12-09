@@ -6,10 +6,12 @@ import '../widgets/charts/salary_histogram.dart';
 import '../widgets/profile_dialog.dart';
 import 'login_page.dart';
 import '../config/api_endpoints.dart';
+import '../services/auth_service.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
-  final String token;
-  const HomePage({super.key, required this.token});
+  String token;
+  HomePage({super.key, required this.token});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -62,15 +64,40 @@ class _HomePageState extends State<HomePage> {
       builder: (context) => ProfileDialog(token: widget.token),
     );
 
-    if (result == 'deleted') {
-      _handleLogout();
-    } else if (result == true) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Account updated successfully'),
-          backgroundColor: Colors.green,
-        ),
-      );
+    if (result != null) {
+      if (result == 'deleted') {
+        _handleLogout();
+      } else if (result is Map<String, dynamic>) {
+        if (result['success']) {
+          if (result['newToken'] != null) {
+            // Update the token in AuthService
+            final authService =
+                Provider.of<AuthService>(context, listen: false);
+            await authService.updateToken(result['newToken']);
+
+            // Update the local token
+            setState(() {
+              widget.token = result['newToken'];
+            });
+
+            // Reinitialize analytics service with new token
+            _analyticsService = AnalyticsService(
+              baseUrl: ApiEndpoints.baseUrl,
+              token: result['newToken'],
+            );
+
+            // Refresh data with new token
+            await fetchData();
+          }
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Profile updated successfully'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      }
     }
   }
 
