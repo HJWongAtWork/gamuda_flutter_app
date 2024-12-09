@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'home_page.dart';
 import 'signup_page.dart';
+import '../config/api_endpoints.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -25,7 +26,7 @@ class _LoginPageState extends State<LoginPage> {
 
       try {
         final response = await http.post(
-          Uri.parse('http://localhost:8000/login'),
+          Uri.parse(ApiEndpoints.auth.login),
           body: {
             'username': _usernameController.text,
             'password': _passwordController.text,

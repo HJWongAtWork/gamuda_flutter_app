@@ -5,6 +5,7 @@ import '../widgets/charts/city_treemap.dart';
 import '../widgets/charts/salary_histogram.dart';
 import '../widgets/profile_dialog.dart';
 import 'login_page.dart';
+import '../config/api_endpoints.dart';
 
 class HomePage extends StatefulWidget {
   final String token;
@@ -25,7 +26,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _analyticsService = AnalyticsService(
-      baseUrl: 'http://localhost:8000',
+      baseUrl: ApiEndpoints.baseUrl,
       token: widget.token,
     );
     fetchData();
