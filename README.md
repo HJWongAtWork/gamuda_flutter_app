@@ -1,5 +1,7 @@
 # Gamuda Flutter App (Assignment)
 
+NOTE: THIS IS NOT AN OFFICIAL GAMUDA PROJECT. THIS IS AN ASSIGNMENT.
+
 ## Pre-requisites
 
 This frontend is to be paired with the [Gamuda Flutter App Backend](https://github.com/HJWongAtWork/gamuda_flutter_backend_final), which provides the database for authentications and data behind the chart displays. Please follow the instructions there on setup BEFORE USING THE WEB APP.
