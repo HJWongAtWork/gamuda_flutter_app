@@ -1,38 +1,127 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
+  <head>
+    <base href="$FLUTTER_BASE_HREF" />
 
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
+    <meta charset="UTF-8" />
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
+    <meta name="description" content="A new Flutter project." />
 
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+    <!-- iOS meta tags & icons -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="gamuda_flutter_app" />
+    <link rel="apple-touch-icon" href="icons/Icon-192.png" />
 
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
-  <base href="$FLUTTER_BASE_HREF">
+    <!-- Google Sign-In meta tag -->
+    <meta
+      name="google-signin-client_id"
+      content="1070221102883-tujj6lig8863tslrepp5d3gpep9s9v5q.apps.googleusercontent.com"
+    />
 
-  <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+    <!-- Security policies -->
+    <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin-allow-popups">
+    <meta http-equiv="Cross-Origin-Embedder-Policy" content="credentialless">
+    
+    <!-- CORS headers -->
+    <meta http-equiv="Access-Control-Allow-Origin" content="http://localhost:8000">
+    <meta http-equiv="Access-Control-Allow-Methods" content="GET, POST, OPTIONS">
+    <meta http-equiv="Access-Control-Allow-Headers" content="Content-Type">
 
-  <!-- iOS meta tags & icons -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="gamuda_flutter_app">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png" />
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
+    <title>gamuda_flutter_app</title>
+    <link rel="manifest" href="manifest.json" />
 
-  <title>gamuda_flutter_app</title>
-  <link rel="manifest" href="manifest.json">
-</head>
-<body>
-  <script src="flutter_bootstrap.js" async></script>
-</body>
+    <script>
+      // The value below is injected by flutter build, do not touch.
+      const serviceWorkerVersion = null;
+    </script>
+    <!-- This script adds the flutter initialization JS code -->
+    <script src="flutter.js" defer></script>
+  </head>
+  <body>
+    <script>
+      window.addEventListener("load", function (ev) {
+        // Disable service worker for authentication endpoints
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for(let registration of registrations) {
+              registration.unregister();
+            }
+          });
+        }
+
+        // Download main.dart.js
+        _flutter.loader.loadEntrypoint({
+          serviceWorker: {
+            serviceWorkerVersion: serviceWorkerVersion,
+          },
+          onEntrypointLoaded: function (engineInitializer) {
+            engineInitializer.initializeEngine().then(function (appRunner) {
+              appRunner.runApp();
+            });
+          },
+        });
+      });
+    </script>
+
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <!-- Firebase Auth -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyB_nQ7kDSgHik_3OBQBH4_ofc-XeYcI-kw",
+        authDomain: "gamuda-flutter-homework-01.firebaseapp.com",
+        projectId: "gamuda-flutter-homework-01",
+        storageBucket: "gamuda-flutter-homework-01.appspot.com",
+        messagingSenderId: "1070221102883",
+        appId: "1:1070221102883:web:b85a5d091de284241ac696",
+      };
+
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+
+      // Configure Firebase Auth
+      const auth = firebase.auth();
+      auth.useDeviceLanguage();
+      
+      // Disable app verification for testing
+      if (auth.settings) {
+        auth.settings.appVerificationDisabledForTesting = true;
+      }
+
+      // Handle Google Sign In
+      auth.getRedirectResult().then(function(result) {
+        if (result.credential) {
+          // Handle successful sign-in
+          console.log('Google Sign In successful');
+        }
+      }).catch(function(error) {
+        console.error('Google Sign In error:', error);
+      });
+    </script>
+
+    <!-- Google Sign-In Platform Library -->
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+    <!-- Handle authentication errors -->
+    <script>
+      window.addEventListener('error', function(e) {
+        if (e.message.includes('auth/')) {
+          console.error('Firebase Auth Error:', e);
+        }
+      });
+
+      // Handle CORS errors
+      window.addEventListener('unhandledrejection', function(e) {
+        if (e.reason && e.reason.message && e.reason.message.includes('CORS')) {
+          console.error('CORS Error:', e.reason);
+        }
+      });
+    </script>
+  </body>
 </html>

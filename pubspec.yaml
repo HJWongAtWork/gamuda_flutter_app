@@ -18,6 +18,9 @@ dependencies:
   # State Management
   provider: ^6.1.1
 
+  # Only Google Sign-In
+  google_sign_in: ^6.1.5
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

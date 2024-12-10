@@ -23,7 +23,7 @@ jobs:
 
       # Build Web
       - name: Build Web
-        run: flutter build web --release --dart-define=API_URL=http://localhost:8000
+        run: flutter build web --web-renderer html --release --dart-define=API_URL=http://localhost:8000 
         # localhost won't work in production anyway
 
       # Deploy to Firebase

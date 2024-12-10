@@ -26,6 +26,7 @@ class _ProfileDialogState extends State<ProfileDialog> {
   String? _error;
   String? _currentUsername;
   String? _currentEmail;
+  String? _socialProvider;
 
   @override
   void initState() {
@@ -78,11 +79,14 @@ class _ProfileDialogState extends State<ProfileDialog> {
         setState(() {
           _currentUsername = data['username'];
           _currentEmail = data['email'];
+          _socialProvider = data['social_provider']; // Get the social provider
           _isLoadingDetails = false;
 
-          // Set the current values as placeholders
-          _newUsernameController.text = _currentUsername ?? '';
-          _newEmailController.text = _currentEmail ?? '';
+          // Only set these if it's not a social login
+          if (_socialProvider == null) {
+            _newUsernameController.text = _currentUsername ?? '';
+            _newEmailController.text = _currentEmail ?? '';
+          }
         });
       } else {
         setState(() {
@@ -220,6 +224,90 @@ class _ProfileDialogState extends State<ProfileDialog> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoadingDetails) {
+      return const Dialog(
+        child: Padding(
+          padding: EdgeInsets.all(24.0),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+      );
+    }
+
+    // Google login view
+    if (_socialProvider == 'google') {
+      return Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Container(
+          width: 400,
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Google Account',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      const Icon(
+                        Icons.g_mobiledata_rounded,
+                        size: 40,
+                        color: Colors.blue,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        _currentEmail ?? '',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Signed in with Google',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Close'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Regular login view (your existing build method)
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),

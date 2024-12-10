@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:provider/provider.dart';
 import 'home_page.dart';
 import 'signup_page.dart';
-import '../config/api_endpoints.dart';
+import '../services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -25,37 +24,70 @@ class _LoginPageState extends State<LoginPage> {
       });
 
       try {
-        final response = await http.post(
-          Uri.parse(ApiEndpoints.auth.login),
-          body: {
-            'username': _usernameController.text,
-            'password': _passwordController.text,
-          },
+        final authService = Provider.of<AuthService>(context, listen: false);
+        final token = await authService.signInWithLocal(
+          _usernameController.text,
+          _passwordController.text,
         );
 
-        if (response.statusCode == 200) {
-          final token = json.decode(response.body)['access_token'];
-          // Store token in secure storage
+        if (mounted) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => HomePage(token: token)),
           );
-        } else {
+        }
+      } catch (e) {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Invalid credentials'),
+            SnackBar(
+              content: Text('Error: $e'),
               backgroundColor: Colors.red,
             ),
           );
         }
-      } catch (e) {
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
+    }
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final authService = Provider.of<AuthService>(context, listen: false);
+      final token = await authService.signInWithGoogle();
+
+      if (token != null && mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage(token: token)),
+        );
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Google sign in failed'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error: $e'),
             backgroundColor: Colors.red,
           ),
         );
-      } finally {
+      }
+    } finally {
+      if (mounted) {
         setState(() {
           _isLoading = false;
         });
@@ -74,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Logo or App Name
+                // Logo or App Name (unchanged)
                 const Icon(
                   Icons.analytics_rounded,
                   size: 80,
@@ -113,6 +145,7 @@ class _LoginPageState extends State<LoginPage> {
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 24),
+                          // Existing form fields (unchanged)
                           TextFormField(
                             controller: _usernameController,
                             decoration: InputDecoration(
@@ -152,6 +185,7 @@ class _LoginPageState extends State<LoginPage> {
                             },
                           ),
                           const SizedBox(height: 24),
+                          // Login Button
                           ElevatedButton(
                             onPressed: _isLoading ? null : _login,
                             style: ElevatedButton.styleFrom(
@@ -176,6 +210,26 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                           ),
                           const SizedBox(height: 16),
+                          // Google Sign In Button
+                          ElevatedButton.icon(
+                            icon: const Icon(
+                              Icons.g_mobiledata_rounded, // or Icons.google
+                              size: 24.0,
+                              color: Colors.blue,
+                            ),
+                            label: const Text('Sign in with Google'),
+                            onPressed: _isLoading ? null : _handleGoogleSignIn,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.black87,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          // Sign Up Row (unchanged)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
