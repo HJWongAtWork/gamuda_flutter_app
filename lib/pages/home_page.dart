@@ -210,45 +210,61 @@ class _HomePageState extends State<HomePage> {
               onRefresh: fetchData,
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24.0,
-                    vertical: 16.0,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (ageRangeData != null)
-                        Card(
-                          elevation: 2,
-                          margin: const EdgeInsets.only(bottom: 24.0),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Users by Age Range',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black87,
-                                  ),
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0,
+                      vertical: 16.0,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment
+                          .center, // Change this from start to center
+                      children: [
+                        if (ageRangeData != null)
+                          SizedBox(
+                            // Wrap Card with SizedBox to control width
+                            width: 800, // Adjust this value as needed
+                            child: Card(
+                              elevation: 2,
+                              margin: const EdgeInsets.only(bottom: 24.0),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Users by Age Range',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    SizedBox(
+                                      height: 300,
+                                      child: AgePieChart(data: ageRangeData!),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(height: 16),
-                                SizedBox(
-                                  height: 300,
-                                  child: AgePieChart(data: ageRangeData!),
-                                ),
-                              ],
+                              ),
                             ),
                           ),
-                        ),
-                      if (cityData != null) CityTreemap(data: cityData!),
-                      if (salaryHistogramData != null)
-                        SalaryHistogram(data: salaryHistogramData!),
-                      const SizedBox(height: 24),
-                    ],
+                        if (cityData != null)
+                          SizedBox(
+                            // Wrap CityTreemap with SizedBox
+                            width: 800, // Adjust this value as needed
+                            child: CityTreemap(data: cityData!),
+                          ),
+                        if (salaryHistogramData != null)
+                          SizedBox(
+                            // Wrap SalaryHistogram with SizedBox
+                            width: 800, // Adjust this value as needed
+                            child: SalaryHistogram(data: salaryHistogramData!),
+                          ),
+                        const SizedBox(height: 24),
+                      ],
+                    ),
                   ),
                 ),
               ),

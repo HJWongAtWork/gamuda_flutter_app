@@ -13,6 +13,8 @@ class ApiEndpoints {
 
 class _AuthEndpoints {
   final String login = '${ApiEndpoints.baseUrl}/login';
+  final String googleLogin = '${ApiEndpoints.baseUrl}/login/google';
+  final String googleCallback = '${ApiEndpoints.baseUrl}/callback/google';
   final String register = '${ApiEndpoints.baseUrl}/register';
   final String accountDetails = '${ApiEndpoints.baseUrl}/account/details';
   final String updateAccount = '${ApiEndpoints.baseUrl}/account/update';
